@@ -1,0 +1,19 @@
+{
+  "template": "https://github.com/blake-hamm/boilerplates/",
+  "commit": "7ef75f601f831d70fac85d03038d56e982a6bacc",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "full_name": "Blake Hamm",
+      "email": "blake.j.hamm@gmail.com",
+      "project_name": "Ogden ICE Analysis",
+      "project_slug_snake": "ogden_ice_analysis",
+      "project_slug_kebab": "ogden-ice-analysis",
+      "project_short_description": "Review of datasets from deportationdata.org",
+      "open_source_license": "BSD license",
+      "_template": "https://github.com/blake-hamm/boilerplates/",
+      "_commit": "7ef75f601f831d70fac85d03038d56e982a6bacc"
+    }
+  },
+  "directory": "python"
+}
