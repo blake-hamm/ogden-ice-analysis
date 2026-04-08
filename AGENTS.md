@@ -6,6 +6,18 @@
 
 This project uses Nix for reproducible development environments. The dev shell provides Python, ruff, uv, and all necessary tools.
 
+## Dependencies
+
+**ALWAYS** use `uv add` to add new packages. Never edit `pyproject.toml` directly.
+
+```bash
+# Add a runtime dependency
+uv add package-name
+
+# Add a dev dependency
+uv add --dev package-name
+```
+
 ## Quality Gates
 
 Every change must pass these two checks:
@@ -79,9 +91,57 @@ def process_data(
     """
 ```
 
+### Error Handling Philosophy
+
+**Prefer simplicity over defensiveness.** Let exceptions bubble up rather than wrapping everything in try-catch blocks with custom exception classes.
+
+**Handle exceptions only at boundaries.** Catch exceptions at the edge of interfaces (API endpoints, CLI commands, file I/O boundaries), not hidden deep in internal functions. Internal code should let exceptions flow naturally to the boundary.
+
+**Avoid defensive if statements.** Don't check if something exists before using it - just use it and let it fail if it's not there. Python's "easier to ask forgiveness than permission" (EAFP) style is preferred over "look before you leap" (LBYL).
+
+**Correct:**
+```python
+def fetch_data(url: str) -> dict:
+    """Fetch data from URL."""
+    response = requests.get(url)
+    response.raise_for_status()
+    return response.json()
+
+def process_file(path: Path) -> str:
+    """Process a file."""
+    with path.open() as f:  # Let it fail if file doesn't exist
+        return f.read()
+```
+
+**WRONG - Do NOT do this:**
+```python
+def fetch_data(url: str) -> dict:
+    """Fetch data from URL."""
+    try:
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.Timeout as e:
+        raise DataFetchError(f"Request timed out: {e}") from e
+    except requests.exceptions.HTTPError as e:
+        raise DataFetchError(f"HTTP error: {e}") from e
+    except ValueError as e:
+        raise DataFetchError(f"Invalid JSON: {e}") from e
+
+def process_file(path: Path) -> str | None:
+    """Process a file."""
+    if not path.exists():  # Defensive check - unnecessary!
+        return None
+    if not path.is_file():  # Another defensive check!
+        return None
+    with path.open() as f:
+        return f.read()
+```
+
+
 ### Zen of Python
 
-*Always do your best to follow the pep 20:*
+*Always do your best to follow pep 20:*
 
 ```
 Beautiful is better than ugly.
