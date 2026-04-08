@@ -42,7 +42,9 @@ htmlcov/
 .nox/
 .coverage
 .coverage.*
-.cache
+.cache/
+# Pytest cache
+.pytest_cache/
 nosetests.xml
 coverage.xml
 *.cover
