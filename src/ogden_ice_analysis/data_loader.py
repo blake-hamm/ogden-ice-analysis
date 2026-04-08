@@ -6,19 +6,21 @@ deportationdata/ice repository with automatic local caching.
 
 from __future__ import annotations
 
-import urllib.request
 from pathlib import Path
 from typing import TYPE_CHECKING
-from urllib.error import URLError
 
 import polars as pl
+
+from ogden_ice_analysis.lfs_downloader import download_file_with_lfs_fallback
 
 if TYPE_CHECKING:
     pass
 
-# Repository and path configuration
+# Repository configuration
+REPO_OWNER = "deportationdata"
+REPO_NAME = "ice"
 REPO_BASE_URL = (
-    "https://raw.githubusercontent.com/deportationdata/ice/refs/heads/main/data"
+    f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/refs/heads/main/data"
 )
 CACHE_DIR = Path(".cache/ogden-ice-analysis")
 
@@ -81,7 +83,7 @@ def load_dataset(
     # Download if not cached
     if not cache_path.exists():
         remote_url = _get_remote_url(dataset_name)
-        _download_file(remote_url, cache_path)
+        _download_file(remote_url, cache_path, dataset_name)
 
     if lazy:
         return pl.scan_parquet(cache_path)
@@ -89,13 +91,10 @@ def load_dataset(
     return pl.read_parquet(cache_path)
 
 
-def _download_file(url: str, dest: Path) -> None:
+def _download_file(url: str, dest: Path, dataset_name: str) -> None:
     """Download a file from URL to destination path."""
-    try:
-        urllib.request.urlretrieve(url, dest)
-    except URLError as e:
-        msg = f"Failed to download {url}: {e}"
-        raise RuntimeError(msg) from e
+    filepath = f"data/{dataset_name}.parquet"
+    download_file_with_lfs_fallback(url, dest, REPO_OWNER, REPO_NAME, filepath)
 
 
 def clear_cache() -> None:

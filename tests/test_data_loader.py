@@ -3,7 +3,6 @@
 import tempfile
 from pathlib import Path
 from unittest.mock import Mock, patch
-from urllib.error import URLError
 
 import polars as pl
 import pytest
@@ -199,37 +198,28 @@ class TestLoadDataset:
 class TestDownloadFile:
     """Tests for _download_file function."""
 
-    @patch("urllib.request.urlretrieve")
+    @patch("ogden_ice_analysis.data_loader.download_file_with_lfs_fallback")
     def test_downloads_file_successfully(
         self,
-        mock_urlretrieve: Mock,
+        mock_download: Mock,
         tmp_path: Path,
     ) -> None:
-        """Test successful file download."""
+        """Test successful file download via LFS fallback."""
         dest = tmp_path / "test.parquet"
         url = "https://example.com/test.parquet"
 
-        # Mock urlretrieve to actually create the file
-        def mock_download(_url: str, dest_arg: Path) -> tuple[str, None]:
-            dest_arg.parent.mkdir(parents=True, exist_ok=True)
-            dest_arg.touch()
-            return (str(dest_arg), None)
+        _download_file(url, dest, "test-dataset")
 
-        mock_urlretrieve.side_effect = mock_download
+        mock_download.assert_called_once()
 
-        _download_file(url, dest)
-
-        mock_urlretrieve.assert_called_once_with(url, dest)
-        assert dest.exists()
-
-    @patch("urllib.request.urlretrieve")
-    def test_raises_error_on_failure(self, mock_urlretrieve: Mock) -> None:
-        """Test that RuntimeError is raised on download failure."""
-        mock_urlretrieve.side_effect = URLError("Connection failed")
+    @patch("ogden_ice_analysis.data_loader.download_file_with_lfs_fallback")
+    def test_raises_error_on_failure(self, mock_download: Mock) -> None:
+        """Test that download errors are propagated."""
+        mock_download.side_effect = RuntimeError("Download failed")
 
         url = "https://example.com/test.parquet"
-        with pytest.raises(RuntimeError, match="Failed to download"):
-            _download_file(url, Path("/tmp/test.parquet"))
+        with pytest.raises(RuntimeError, match="Download failed"):
+            _download_file(url, Path("/tmp/test.parquet"), "test-dataset")
 
 
 class TestClearCache:
