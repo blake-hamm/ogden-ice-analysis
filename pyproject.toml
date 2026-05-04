@@ -63,3 +63,8 @@ branch = true
 fail_under = 80
 ignore_errors = true
 show_missing = true
+
+[dependency-groups]
+dev = [
+    "matplotlib>=3.10.9",
+]
