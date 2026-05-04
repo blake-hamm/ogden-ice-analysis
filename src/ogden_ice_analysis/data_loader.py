@@ -17,21 +17,19 @@ if TYPE_CHECKING:
     pass
 
 # Repository configuration
-REPO_OWNER = "deportationdata"
-REPO_NAME = "ice"
-REPO_BASE_URL = (
-    f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/refs/heads/main/data"
-)
 CACHE_DIR = Path(".cache/ogden-ice-analysis")
 
-# Available datasets (parquet files only)
-AVAILABLE_DATASETS = {
-    "arrests-latest",
-    "detainers-latest",
-    "detention-stays-latest",
-    "detention-stints-latest",
-    "facilities-daily-population-latest",
+# Dataset to repository mapping (owner, repo)
+DATASET_REPOS = {
+    "arrests-latest": ("deportationdata", "ice"),
+    "detainers-latest": ("deportationdata", "ice"),
+    "detention-stays-latest": ("deportationdata", "ice"),
+    "detention-stints-latest": ("deportationdata", "ice"),
+    "facilities-daily-population-latest": ("deportationdata", "ice"),
+    "facilities-latest": ("deportationdata", "ice-detention-facilities"),
 }
+
+AVAILABLE_DATASETS = set(DATASET_REPOS)
 
 
 def _ensure_cache_dir() -> Path:
@@ -46,9 +44,16 @@ def _get_cache_path(dataset_name: str) -> Path:
     return cache_dir / f"{dataset_name}.parquet"
 
 
+def _get_repo_base_url(owner: str, repo: str) -> str:
+    """Get the base raw URL for a repository."""
+    return f"https://raw.githubusercontent.com/{owner}/{repo}/refs/heads/main/data"
+
+
 def _get_remote_url(dataset_name: str) -> str:
     """Get the remote URL for a dataset."""
-    return f"{REPO_BASE_URL}/{dataset_name}.parquet"
+    owner, repo = DATASET_REPOS[dataset_name]
+    base = _get_repo_base_url(owner, repo)
+    return f"{base}/{dataset_name}.parquet"
 
 
 def list_datasets() -> list[str]:
@@ -93,8 +98,9 @@ def load_dataset(
 
 def _download_file(url: str, dest: Path, dataset_name: str) -> None:
     """Download a file from URL to destination path."""
+    owner, repo = DATASET_REPOS[dataset_name]
     filepath = f"data/{dataset_name}.parquet"
-    download_file_with_lfs_fallback(url, dest, REPO_OWNER, REPO_NAME, filepath)
+    download_file_with_lfs_fallback(url, dest, owner, repo, filepath)
 
 
 def clear_cache() -> None:
