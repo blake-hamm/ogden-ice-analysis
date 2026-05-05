@@ -1433,16 +1433,12 @@ dev = [
     { name = "cruft" },
     { name = "ipykernel" },
     { name = "jupyter" },
+    { name = "matplotlib" },
     { name = "notebook" },
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "ruff" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "matplotlib" },
 ]
 
 [package.metadata]
@@ -1452,6 +1448,7 @@ requires-dist = [
     { name = "cruft", marker = "extra == 'dev'", specifier = ">=2.15.0" },
     { name = "ipykernel", marker = "extra == 'dev'" },
     { name = "jupyter", marker = "extra == 'dev'" },
+    { name = "matplotlib", marker = "extra == 'dev'", specifier = ">=3.10.9" },
     { name = "notebook", marker = "extra == 'dev'" },
     { name = "polars", specifier = ">=1.39.3" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.8.0" },
@@ -1460,9 +1457,6 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.5.7" },
 ]
 provides-extras = ["dev"]
-
-[package.metadata.requires-dev]
-dev = [{ name = "matplotlib", specifier = ">=3.10.9" }]
 
 [[package]]
 name = "packaging"
