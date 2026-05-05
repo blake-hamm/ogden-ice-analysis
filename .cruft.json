@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/blake-hamm/boilerplates/",
-  "commit": "7ef75f601f831d70fac85d03038d56e982a6bacc",
+  "commit": "28488ee92b4ac2eeecfdab8adc626843ac8bd87d",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -12,7 +12,7 @@
       "project_short_description": "Review of datasets from deportationdata.org",
       "open_source_license": "BSD license",
       "_template": "https://github.com/blake-hamm/boilerplates/",
-      "_commit": "7ef75f601f831d70fac85d03038d56e982a6bacc"
+      "_commit": "28488ee92b4ac2eeecfdab8adc626843ac8bd87d"
     }
   },
   "directory": "python"
