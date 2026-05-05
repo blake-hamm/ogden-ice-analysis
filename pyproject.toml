@@ -24,6 +24,7 @@ dev = [
   "ipykernel",
   "notebook",
   "jupyter",
+  "matplotlib>=3.10.9",
 ]
 
 [build-system]
@@ -63,3 +64,4 @@ branch = true
 fail_under = 80
 ignore_errors = true
 show_missing = true
+

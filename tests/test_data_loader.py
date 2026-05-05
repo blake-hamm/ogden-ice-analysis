@@ -84,8 +84,8 @@ class TestGetCachePath:
 class TestGetRemoteUrl:
     """Tests for _get_remote_url function."""
 
-    def test_returns_correct_url(self) -> None:
-        """Test that _get_remote_url constructs the correct GitHub URL."""
+    def test_returns_correct_url_for_ice_repo(self) -> None:
+        """Test that _get_remote_url constructs the correct GitHub URL for ice repo."""
         result = _get_remote_url("arrests-latest")
         expected = (
             "https://raw.githubusercontent.com/deportationdata/ice/refs/heads/main/data"
@@ -93,11 +93,20 @@ class TestGetRemoteUrl:
         )
         assert result == expected
 
+    def test_returns_correct_url_for_facilities_repo(self) -> None:
+        """Test that _get_remote_url constructs the correct URL for facilities repo."""
+        result = _get_remote_url("facilities-latest")
+        expected = (
+            "https://raw.githubusercontent.com/deportationdata/ice-detention-facilities"
+            "/refs/heads/main/data/facilities-latest.parquet"
+        )
+        assert result == expected
+
     def test_url_contains_base_and_dataset(self) -> None:
         """Test that URL contains both base path and dataset name."""
-        result = _get_remote_url("test-dataset")
-        assert data_loader.REPO_BASE_URL in result
-        assert "test-dataset.parquet" in result
+        result = _get_remote_url("arrests-latest")
+        assert "deportationdata/ice/refs/heads/main/data" in result
+        assert "arrests-latest.parquet" in result
 
 
 class TestLoadDataset:
@@ -208,7 +217,7 @@ class TestDownloadFile:
         dest = tmp_path / "test.parquet"
         url = "https://example.com/test.parquet"
 
-        _download_file(url, dest, "test-dataset")
+        _download_file(url, dest, "arrests-latest")
 
         mock_download.assert_called_once()
 
@@ -219,7 +228,7 @@ class TestDownloadFile:
 
         url = "https://example.com/test.parquet"
         with pytest.raises(RuntimeError, match="Download failed"):
-            _download_file(url, Path("/tmp/test.parquet"), "test-dataset")
+            _download_file(url, Path("/tmp/test.parquet"), "arrests-latest")
 
 
 class TestClearCache:

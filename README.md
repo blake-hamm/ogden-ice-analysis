@@ -14,3 +14,8 @@ source .venv/bin/activate
 # To install dependencies
 uv sync --all-extras
 ```
+
+#### Resources
+- https://www.kuer.org/politics-government/2026-03-19/ogden-activists-want-to-use-a-city-permit-as-an-unlikely-tactic-against-ice
+- https://deportationdata.org/index.html
+- https://www.ice.gov/node/62163
